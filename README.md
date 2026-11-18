@@ -50,6 +50,9 @@ dxf-to-pdf input.dxf output.pdf --scale 1:1 --paper A4 --tile
 # Draw all colors black (monochrome printing; alias: --black)
 dxf-to-pdf input.dxf output.pdf --scale 1:100 --monochrome
 
+# Keep each painted path under 2000 segments (for tools that rewrite PDF paths)
+dxf-to-pdf input.dxf output.pdf --scale 1:100 --max-path-segments 2000
+
 # Inspect drawing metadata
 dxf-to-pdf input.dxf --info
 dxf-to-pdf input.dxf --list-layers
@@ -70,12 +73,16 @@ dxf-to-pdf input.dxf --emit-wall-segments walls.xml --scale 1:100
 | `--layers` | *(all)* | Include only these layers (comma-separated) |
 | `--tile` | | Tile drawing across multiple pages |
 | `--monochrome` | | Draw all vector content in black (alias: `--black`); raster images and wipeout masks keep their colors |
+| `--max-path-segments` | `0` | Split stroked paths longer than N segments before painting (0 = off); a cut polyline shows two caps where it had one join |
 | `--crop` | | Crop to bounding box: `minX,minY,maxX,maxY` |
 | `--dwg-2-dxf` | *(auto)* | Path to `dwg2dxf` binary |
 | `--font-dir` | *(see below)* | Directory containing DejaVuSans*.ttf font files |
 | `--info` | | Print drawing metadata and exit |
 | `--list-layers` | | List all layers and exit |
 | `--emit-wall-segments` | | Recognize walls, write XML, and exit (see below) |
+
+`--max-path-segments` exists for consumers that rewrite paths, such as PDF redaction tools that
+refuse a single huge path; a cut polyline shows two caps where it had one join.
 
 ## Wall recognition (`--emit-wall-segments`)
 

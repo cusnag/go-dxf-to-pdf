@@ -29,6 +29,7 @@ type Options struct {
 	DPI         float64 // raster output DPI (default: 300)
 	Transparent bool    // transparent PNG background (default: false)
 	Monochrome  bool    // draw all drawing content in black
+	MaxPathSegments int // split stroked paths longer than this; 0 = off
 	Layout      string  // paper space layout to plot; "model" = model space; "" = the layout the drawing was saved on, if any
 }
 
@@ -373,6 +374,7 @@ func convertDrawing(drawing *dxf.Drawing, pdfPath string, opts Options, images m
 	newRenderer := func(paper PaperSize, landscape bool) *Renderer {
 		r := NewRenderer(paper, landscape, margin, opts.FontDir)
 		r.SetMonochrome(opts.Monochrome)
+		r.SetMaxPathSegments(opts.MaxPathSegments)
 		r.SetBatching(true)
 		r.SetLineTypes(lineTypes)
 		r.SetTextStyles(drawing.Styles)

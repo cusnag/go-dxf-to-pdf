@@ -43,6 +43,7 @@ type Renderer struct {
 	batch        bool
 	pending      *canvas.Path // batched strokes, page coordinates
 	pendingSegs  int
+	maxPathSegments int      // split stroked paths longer than this (0 = off)
 	penX, penY   float64 // end point of the last batched segment
 	styleSet     bool    // ctx stroke style matches strokeCol/strokeW
 	fillSet      bool    // ctx fill is opaque (SetFillColor), not the stroke default
@@ -307,6 +308,12 @@ func (r *Renderer) plotRGB(col RGB) RGB {
 	return col
 }
 
+// SetMaxPathSegments splits any stroked path longer than n segments before
+// painting it. 0 (the default) disables splitting.
+func (r *Renderer) SetMaxPathSegments(n int) {
+	r.maxPathSegments = n
+}
+
 // SetRasterStrokes makes the renderer outline strokes itself, for raster
 // output at dpi: each subpath of a batch is stroked on its own (falling back
 // to single segments where canvas fails) and the batch is filled as one.
@@ -441,7 +448,9 @@ func (r *Renderer) flush() {
 		}
 		return
 	}
-	r.ctx.DrawPath(0, 0, p)
+	for _, piece := range splitLongPath(p, r.maxPathSegments) {
+		r.ctx.DrawPath(0, 0, piece)
+	}
 }
 
 // fillStrokeOutline draws strokes as one filled outline (raster output, see

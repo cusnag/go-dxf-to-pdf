@@ -30,6 +30,7 @@ type CLI struct {
 	DPI         float64  `default:"300" help:"DPI for raster output (PNG/JPG). Default: 300."`
 	Transparent bool     `help:"Transparent PNG background (useful for layer compositing)."`
 	Monochrome  bool     `aliases:"black" help:"Draw all drawing colors in black (raster images and wipeout masks keep their colors)."`
+	MaxPathSegments int  `default:"0" help:"Split any stroked path longer than N segments before painting (0 = off)."`
 	Info        bool     `help:"Print drawing info (units, size, entity count, blocks) and exit."`
 	ListLayers  bool     `help:"List all layers and exit."`
 
@@ -259,6 +260,7 @@ func main() {
 		DPI:         cli.DPI,
 		Transparent: cli.Transparent,
 		Monochrome:  cli.Monochrome,
+		MaxPathSegments: cli.MaxPathSegments,
 		Layout:      cli.Layout,
 	})
 	if err != nil {
